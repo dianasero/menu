@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/linearList"
+    android:layout_width="match_parent"
+    android:layout_height="100dp">
+
+    <ImageView
+        android:id="@+id/imageL"
+        android:layout_width="150dp"
+        android:layout_height="100dp"
+        android:background="@drawable/botonredondo"
+        android:backgroundTint="#FFFCFC"
+        android:paddingTop="10dp"
+        app:srcCompat="@drawable/ic_laundry_foreground" />
+
+    <LinearLayout
+        android:id="@+id/linearLay"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical"
+        android:paddingLeft="15dp">
+
+        <TextView
+            android:id="@+id/tipoPrenda"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:fontFamily="sans-serif-condensed-medium"
+            android:paddingTop="5dp"
+            android:paddingBottom="3dp"
+            android:text="Prenda Estandar"
+            android:textColor="@color/colorPrimaryDark" />
+
+        <TextView
+            android:id="@+id/horario"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:drawableLeft="@drawable/ic_relojb"
+            android:fontFamily="sans-serif-condensed-medium"
+            android:paddingBottom="3dp"
+            android:text="TextView"
+            android:textAlignment="inherit"
+            android:textColor="#9E141415" />
+
+        <TextView
+            android:id="@+id/costo"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:drawableLeft="@drawable/ic_billete"
+
+            android:fontFamily="sans-serif-condensed-medium"
+            android:text="TextView"
+            android:textColor="#9E141415" />
+
+        <TextView
+            android:id="@+id/descuento"
+            android:layout_width="110dp"
+            android:layout_height="wrap_content"
+            android:background="@drawable/botonredondo"
+            android:backgroundTint="#20DA27"
+            android:fontFamily="sans-serif-condensed-medium"
+            android:text="10% descuento"
+            android:textAlignment="center"
+            android:visibility="visible" />
+    </LinearLayout>
+
+
+</LinearLayout>
