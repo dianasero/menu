@@ -8,13 +8,23 @@ public class lavanderia {
     private String hora;
     private String precio;
     private String descuento;
+    private  int indice;
 
-    public lavanderia(Bitmap imagen, String tipo, String hora, String precio, String descuento) {
+    public lavanderia(Bitmap imagen, String tipo, String hora, String precio, String descuento, int indice) {
         this.imagen = imagen;
         this.tipo = tipo;
         this.hora = hora;
         this.precio = precio;
+        this.indice = indice;
         this.descuento = descuento;
+    }
+
+    public int getIndice() {
+        return indice;
+    }
+
+    public void setIndice(int indice) {
+        this.indice = indice;
     }
 
     public String getPrecio() {
