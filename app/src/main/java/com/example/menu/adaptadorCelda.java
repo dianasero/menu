@@ -6,6 +6,9 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
+import android.widget.ImageView;
+import android.widget.TextView;
+
 public abstract class adaptadorCelda extends BaseAdapter {
     private ArrayList<?> entrys;
     private int R_layout_IdView;
@@ -17,9 +20,14 @@ public abstract class adaptadorCelda extends BaseAdapter {
         this.contexto = contexto;
     }
 
+
     @Override
     public int getCount() {
         return entrys.size();
+    }
+
+    public void setEntrys(ArrayList<?> entrys) {
+        this.entrys = entrys;
     }
 
     @Override

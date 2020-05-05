@@ -32,8 +32,8 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
         //Descarga de imagenes
         try {
-            imagenes = new Bitmap[new petition(this).execute("http://192.168.1.76:3000/").get().length];
-            imagenes = new petition(this).execute("http://192.168.1.76:3000/").get();
+            imagenes = new Bitmap[new petition(this).execute("http://192.168.1.76:8080/").get().length];
+            imagenes = new petition(this).execute("http://192.168.1.76:8080/").get();
         } catch (ExecutionException e) {
             e.printStackTrace();
         } catch (InterruptedException e) {

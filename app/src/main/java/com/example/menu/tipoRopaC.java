@@ -1,43 +1,99 @@
 package com.example.menu;
-
 import android.app.Activity;
 import android.content.Intent;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
-import android.os.AsyncTask;
+import android.graphics.*;
 import android.os.Bundle;
-import android.util.Base64;
-import android.util.Log;
 import android.view.View;
-import android.widget.Button;
-import android.widget.ImageButton;
-import android.widget.ImageView;
-import android.widget.ListView;
-import android.widget.TextView;
+import android.widget.*;
 
-import java.io.BufferedReader;
-import java.io.ByteArrayOutputStream;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.lang.ref.WeakReference;
-import java.net.HttpURLConnection;
-import java.net.URL;
+
+import androidx.annotation.ColorInt;
+import androidx.core.content.ContextCompat;
+
 import java.util.ArrayList;
 import java.util.concurrent.ExecutionException;
 
 public class tipoRopaC extends Activity {
     ArrayList<tipoRopa> prendasA = new ArrayList<tipoRopa>();
     Bitmap [] imagenes;
+    adaptadorCelda ad = null;
+    @Override
+    protected void onResume() {
+        super.onResume();
+        Button tintoreria = (Button)findViewById(R.id.tintoreria);
+        Button lavanderia = (Button)findViewById(R.id.lavanderia);
+        Button planchado = (Button)findViewById(R.id.planchado);
+        Button tintoreriaE = (Button)findViewById(R.id.tintoreriaE);
+        Button costura = (Button)findViewById(R.id.costura);
+        final Button[] buttonA = {tintoreria,lavanderia,planchado,tintoreriaE,costura};
+        final TextView actual = findViewById(R.id.actual);
+        tintoreria.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                cambiarColor(0,buttonA);
+                prendasA.clear();
+                for(int i =4;i<imagenes.length;i++)
+                    prendasA.add(new tipoRopa("Tintoreria","2.00","Sin descripcion",imagenes[i]));
+                ad.notifyDataSetChanged();
+                actual.setText("Tintoreria");
+            }
+        });
+
+        lavanderia.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                cambiarColor(1,buttonA);
+                prendasA.clear();
+                for(int i =1;i<imagenes.length-1;i++)
+                    prendasA.add(new tipoRopa("Lavanderia","5.00","Sin descripcion",imagenes[i]));
+                ad.notifyDataSetChanged();
+                actual.setText("Lavanderia");
+            }
+        });
+        planchado.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                cambiarColor(2,buttonA);
+                prendasA.clear();
+                for(int i =3;i<imagenes.length-2;i++)
+                    prendasA.add(new tipoRopa("Planchado","17.00","Sin descripcion",imagenes[i]));
+                ad.notifyDataSetChanged();
+                actual.setText("Planchado");
+            }
+        });
+        tintoreriaE.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                cambiarColor(3,buttonA);
+                prendasA.clear();
+                for(int i =2;i<imagenes.length-3;i++)
+                    prendasA.add(new tipoRopa("Tintoreria Ecologica","14.00","Sin descripcion",imagenes[i]));
+                ad.notifyDataSetChanged();
+                actual.setText("TintoreriaE");
+            }
+        });
+        costura.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                cambiarColor(4,buttonA);
+                prendasA.clear();
+                for(int i=2;i<imagenes.length;i++)
+                    prendasA.add(new tipoRopa("Costura","24.00","Sin descripcion",imagenes[i]));
+                ad.notifyDataSetChanged();
+                actual.setText("Costura");
+            }
+        });
+    }
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.descriptionropa);
         Intent intent = getIntent();
-//        Bitmap bitmap = (Bitmap) intent.getParcelableExtra("imagen");
         int pos = intent.getExtras().getInt("posicion");
+        final ListView listaPrendas = (ListView)findViewById(R.id.listPrendas);
         try {
-            imagenes = new Bitmap[new petition(this).execute("http://192.168.1.76:3000/",String.valueOf(pos)).get().length];
-            imagenes = new petition(this).execute("http://192.168.1.76:3000/",String.valueOf(pos)).get();
+            imagenes = new Bitmap[new petition(this).execute("http://192.168.1.76:8080/",String.valueOf(pos)).get().length];
+            imagenes = new petition(this).execute("http://192.168.1.76:8080/",String.valueOf(pos)).get();
         } catch (ExecutionException e) {
             e.printStackTrace();
         } catch (InterruptedException e) {
@@ -47,9 +103,7 @@ public class tipoRopaC extends Activity {
         img.setImageBitmap(imagenes[0]);
         for(int i =1;i<imagenes.length;i++)
             prendasA.add(new tipoRopa("Traje","Ventriculo","Sin descripcion",imagenes[i]));
-
-        ListView listaPrendas = (ListView)findViewById(R.id.listPrendas);
-        listaPrendas.setAdapter(new adaptadorCelda(prendasA, R.layout.tiporopa,this) {
+        ad = new adaptadorCelda(prendasA, R.layout.tiporopa,this) {
             @Override
             public void onEntrada(Object entrada, View view) {
                 ImageView img = (ImageView)view.findViewById(R.id.imagenR);
@@ -62,12 +116,19 @@ public class tipoRopaC extends Activity {
                 precio.setText(((tipoRopa)entrada).getPrecio());
 
             }
-        });
+        };
+        listaPrendas.setAdapter(ad);
         ImageButton btn =  findViewById(R.id.regreso);
         btn.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
                 finish();
             }
         });
+    }
+    public void cambiarColor(int boton, Button[] buttonA){
+        buttonA[boton].setBackgroundTintList(ContextCompat.getColorStateList(this, R.color.colorGray));
+        for(Button b: buttonA)
+            if(b.getId()!= buttonA[boton].getId())
+                b.setBackgroundTintList(ContextCompat.getColorStateList(this, R.color.colorPrimary));
     }
 }
