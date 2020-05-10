@@ -7,6 +7,7 @@ import android.view.View;
 import android.widget.*;
 
 
+
 import androidx.annotation.ColorInt;
 import androidx.core.content.ContextCompat;
 
@@ -122,6 +123,13 @@ public class tipoRopaC extends Activity {
         btn.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
                 finish();
+            }
+        });
+        Button verCesto = findViewById(R.id.verCesto);
+        verCesto.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                startActivity(new Intent(getApplicationContext(),MapsActivity.class));
             }
         });
     }

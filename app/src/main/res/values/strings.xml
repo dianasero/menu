@@ -5,4 +5,11 @@
     <string name="principal">Principal</string>
     <string name="item1">item1</string>
     <string name="hint_search">hint_serach</string>
+
+
+    <string name="CLAVE_API">AIzaSyBREvDnnimfoMMfXQHYuerVt6HucSQZFW4</string>
+    <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="title_activity_maps">Map</string>
+    <string name="trazo">Obtener ruta</string>
+
 </resources>

@@ -19,7 +19,7 @@
         app:srcCompat="@drawable/ic_launcher_foreground" />
 
     <Button
-        android:id="@+id/button8"
+        android:id="@+id/verCesto"
         android:layout_width="329dp"
         android:layout_height="57dp"
         android:drawableLeft="@drawable/ic_cesta"
