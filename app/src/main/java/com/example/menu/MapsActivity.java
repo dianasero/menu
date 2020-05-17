@@ -1,13 +1,16 @@
 package com.example.menu;
 
 import androidx.annotation.DrawableRes;
+import androidx.annotation.StringRes;
 import androidx.fragment.app.FragmentActivity;
 
+import android.content.Intent;
 import android.graphics.Color;
 import android.location.Address;
 import android.location.Geocoder;
 import android.os.Bundle;
 import android.util.Log;
+import android.widget.Button;
 import android.widget.SearchView;
 
 import com.google.android.gms.common.api.Status;
@@ -15,6 +18,8 @@ import com.google.android.gms.maps.*;
 import com.google.android.gms.maps.model.*;
 import com.google.android.libraries.places.api.Places;
 import com.google.android.libraries.places.api.model.Place;
+import com.google.android.libraries.places.api.model.TypeFilter;
+import com.google.android.libraries.places.api.net.PlacesClient;
 import com.google.android.libraries.places.widget.AutocompleteSupportFragment;
 import com.google.android.libraries.places.widget.listener.PlaceSelectionListener;
 
@@ -66,80 +71,93 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     private LatLng mDestination;
     private Polyline mPolyline;
     ArrayList<LatLng> mMarkerPoints;
-
+    Button trazar;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_maps);
         // Obtain the SupportMapFragment and get notified when the map is ready to be used.
-        searchView = findViewById(R.id.sv_location);
+//        searchView = findViewById(R.id.sv_location);
 
         mapFragment = (SupportMapFragment)
                 getSupportFragmentManager()
                         .findFragmentById(R.id.google_map);
         mapFragment.getMapAsync(this);
         if (!Places.isInitialized()) {
-            Places.initialize(getApplicationContext(), String.valueOf(R.string.CLAVE_API));
+            Places.initialize(getApplicationContext(), getString(R.string.google_maps_key));
         }
-        searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
+
+        autocompleteSupportFragment = (AutocompleteSupportFragment)
+                getSupportFragmentManager().findFragmentById(R.id.auto_frag);
+
+//        searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
+//            @Override
+//            public boolean onQueryTextSubmit(String query) {
+//                String location = searchView.getQuery().toString();
+//                List<Address> addressList = null;
+//                if (location != null || !location.equals("")) {
+//                    Geocoder geocoder = new Geocoder(MapsActivity.this);
+//                    try {
+//                        addressList = geocoder.getFromLocationName(location, 1);
+//                    } catch (IOException e) {
+//                        Log.d("IOEXception: ", e.getMessage());
+//                    }
+//                    Address address = addressList.get(0);
+//                    LatLng latLng = new LatLng(address.getLatitude(), address.getLongitude());
+//                    mMap.addMarker(new MarkerOptions().position(latLng).title(location));
+//                    mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(latLng, 10));
+//
+//                }
+//
+//                return false;
+//            }
+//
+//            @Override
+//            public boolean onQueryTextChange(String newText) {
+//                return false;
+//            }
+//        });
+        mMarkerPoints = new ArrayList<>();
+        trazar = findViewById(R.id.trazo);
+        trazar.setOnClickListener(new View.OnClickListener() {
             @Override
-            public boolean onQueryTextSubmit(String query) {
-                String location = searchView.getQuery().toString();
-                List<Address> addressList = null;
-                if (location != null || !location.equals("")) {
-                    Geocoder geocoder = new Geocoder(MapsActivity.this);
-                    try {
-                        addressList = geocoder.getFromLocationName(location, 1);
-                    } catch (IOException e) {
-                        Log.d("IOEXception: ", e.getMessage());
-                    }
-                    Address address = addressList.get(0);
-                    LatLng latLng = new LatLng(address.getLatitude(), address.getLongitude());
-                    mMap.addMarker(new MarkerOptions().position(latLng).title(location));
-                    mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(latLng, 10));
-
-                }
-
-                return false;
-            }
-
-            @Override
-            public boolean onQueryTextChange(String newText) {
-                return false;
+            public void onClick(View v) {
+                if (mMarkerPoints.size()>=2)
+                    drawRoute();
             }
         });
-        mMarkerPoints = new ArrayList<>();
 
     }
 
 
 
-//        autocompleteSupportFragment = (AutocompleteSupportFragment)
-//                getSupportFragmentManager().findFragmentById(R.id.auto_frag);
-//        setupAutoCompleteFragment();
 
 
-//    private void setupAutoCompleteFragment() {
-//        autocompleteSupportFragment.setPlaceFields(Arrays.asList(Place.Field.ID, Place.Field.NAME));
-//
-//        autocompleteSupportFragment.setOnPlaceSelectedListener(new PlaceSelectionListener() {
-//            @Override
-//            public void onPlaceSelected(Place place) {
-//                // TODO: Get info about the selected place.
-//                Log.i("TAG", "Place: " + place.getName() + ", " + place.getId());
-//                LatLng sydney = place.getLatLng();
-//                mapFragment.getMapAsync(MapsActivity.this);
-//            }
-//
-//            @Override
-//            public void onError(Status status) {
-//                // TODO: Handle the error.
-//                Log.i("TAG", "An error occurred: " + status);
-//            }
-//        });
-//
-//    }
+    private void setupAutoCompleteFragment() {
+        autocompleteSupportFragment.setTypeFilter(TypeFilter.CITIES);
+        autocompleteSupportFragment.setPlaceFields(Arrays.asList(Place.Field.ID, Place.Field.NAME,Place.Field.LAT_LNG));
+
+        autocompleteSupportFragment.setOnPlaceSelectedListener(new PlaceSelectionListener() {
+            @Override
+            public void onPlaceSelected(Place place) {
+                // TODO: Get info about the selected place.
+                Log.i("TAG", "Place: " + place.getName() + ", " + place.getId()+","+place.getLatLng());
+                MarkerOptions options = new MarkerOptions();
+                options.position(place.getLatLng());
+                options.icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_RED));
+                mMap.addMarker(options);
+                mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(place.getLatLng(),15));
+            }
+
+            @Override
+            public void onError(Status status) {
+                // TODO: Handle the error.
+                Log.i("TAG", "An error occurred: " + status);
+            }
+        });
+
+    }
 
 
 
@@ -147,6 +165,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     @Override
     public void onMapReady(GoogleMap googleMap) {
         mMap = googleMap;
+        setupAutoCompleteFragment();
         mMap.setOnMapClickListener(new OnMapClickListener() {
             @Override
             public void onMapClick(LatLng latLng) {
@@ -167,13 +186,15 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                 }else if(mMarkerPoints.size()==2){
                     options.icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_RED));
                 }
-
                 mMap.addMarker(options);
 
                 if(mMarkerPoints.size() >= 2){
                     mOrigin = mMarkerPoints.get(0);
                     mDestination = mMarkerPoints.get(1);
-                    drawRoute();
+                    Intent ii = new Intent(getApplicationContext(), LockerActivity.class);
+                    ii.putExtra("destino", mMarkerPoints.get(1).toString());
+                    startActivity(ii);
+//                    drawRoute();
                 }
             }
         });

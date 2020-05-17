@@ -93,8 +93,8 @@ public class tipoRopaC extends Activity {
         int pos = intent.getExtras().getInt("posicion");
         final ListView listaPrendas = (ListView)findViewById(R.id.listPrendas);
         try {
-            imagenes = new Bitmap[new petition(this).execute("http://192.168.1.76:8080/",String.valueOf(pos)).get().length];
-            imagenes = new petition(this).execute("http://192.168.1.76:8080/",String.valueOf(pos)).get();
+            imagenes = new Bitmap[new petition(this).execute("http://192.168.1.64:8080/",String.valueOf(pos)).get().length];
+            imagenes = new petition(this).execute("http://192.168.1.64:8080/",String.valueOf(pos)).get();
         } catch (ExecutionException e) {
             e.printStackTrace();
         } catch (InterruptedException e) {
