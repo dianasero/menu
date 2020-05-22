@@ -1,53 +1,25 @@
 package com.example.menu;
 
-import androidx.annotation.DrawableRes;
-import androidx.annotation.StringRes;
-import androidx.fragment.app.FragmentActivity;
-
 import android.content.Intent;
 import android.graphics.Color;
-import android.location.Address;
-import android.location.Geocoder;
-import android.os.Bundle;
-import android.util.Log;
-import android.widget.Button;
-import android.widget.SearchView;
-
-import com.google.android.gms.common.api.Status;
-import com.google.android.gms.maps.*;
-import com.google.android.gms.maps.model.*;
-import com.google.android.libraries.places.api.Places;
-import com.google.android.libraries.places.api.model.Place;
-import com.google.android.libraries.places.api.model.TypeFilter;
-import com.google.android.libraries.places.api.net.PlacesClient;
-import com.google.android.libraries.places.widget.AutocompleteSupportFragment;
-import com.google.android.libraries.places.widget.listener.PlaceSelectionListener;
-
-import java.io.*;
-import java.util.*;
-import android.Manifest;
-import android.content.pm.PackageManager;
-import android.graphics.Color;
-import android.location.Criteria;
 import android.location.Location;
-import android.location.LocationListener;
-import android.location.LocationManager;
-import android.os.AsyncTask;
-import android.os.Build;
-import android.os.Bundle;
+import android.os.*;
 import android.util.Log;
 import android.view.View;
-import android.widget.Toast;
+import android.widget.*;
 
-import com.google.android.gms.maps.CameraUpdateFactory;
+import androidx.fragment.app.FragmentActivity;
+
+import com.google.android.gms.common.api.Status;
+import com.google.android.gms.location.*;
+import com.google.android.gms.maps.*;
 import com.google.android.gms.maps.GoogleMap.OnMapClickListener;
-import com.google.android.gms.maps.OnMapReadyCallback;
-import com.google.android.gms.maps.SupportMapFragment;
-import com.google.android.gms.maps.model.BitmapDescriptorFactory;
-import com.google.android.gms.maps.model.LatLng;
-import com.google.android.gms.maps.model.MarkerOptions;
-import com.google.android.gms.maps.model.Polyline;
-import com.google.android.gms.maps.model.PolylineOptions;
+import com.google.android.gms.maps.model.*;
+import com.google.android.gms.tasks.*;
+import com.google.android.libraries.places.api.Places;
+import com.google.android.libraries.places.api.model.*;
+import com.google.android.libraries.places.widget.AutocompleteSupportFragment;
+import com.google.android.libraries.places.widget.listener.PlaceSelectionListener;
 
 import org.json.JSONObject;
 
@@ -58,6 +30,7 @@ import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 
@@ -66,6 +39,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     private GoogleMap mMap;
     SupportMapFragment mapFragment;
     SearchView searchView;
+    private FusedLocationProviderClient fusedLocationClient;
     AutocompleteSupportFragment autocompleteSupportFragment;
     private LatLng mOrigin;
     private LatLng mDestination;
@@ -145,7 +119,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                 Log.i("TAG", "Place: " + place.getName() + ", " + place.getId()+","+place.getLatLng());
                 MarkerOptions options = new MarkerOptions();
                 options.position(place.getLatLng());
-                options.icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_RED));
                 mMap.addMarker(options);
                 mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(place.getLatLng(),15));
             }
@@ -166,6 +139,23 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     public void onMapReady(GoogleMap googleMap) {
         mMap = googleMap;
         setupAutoCompleteFragment();
+        fusedLocationClient = LocationServices.getFusedLocationProviderClient(this);
+
+        Task<Location> task = fusedLocationClient.getLastLocation();
+        task.addOnSuccessListener(new OnSuccessListener<Location>() {
+            @Override
+            public void onSuccess(Location location) {
+                if (location != null) {
+                    mMap.setMyLocationEnabled(true);
+                    LatLng lat = new LatLng(location.getLatitude(),location.getLongitude());
+                    mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(lat,30));
+                    MarkerOptions options = new MarkerOptions();
+                    options.position(lat);
+                    mMap.addMarker(options);
+
+                }
+            }
+        });
         mMap.setOnMapClickListener(new OnMapClickListener() {
             @Override
             public void onMapClick(LatLng latLng) {
@@ -192,6 +182,14 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                     mOrigin = mMarkerPoints.get(0);
                     mDestination = mMarkerPoints.get(1);
                     Intent ii = new Intent(getApplicationContext(), LockerActivity.class);
+                    Location origin = new Location("");
+                    origin.setLongitude(mOrigin.longitude);
+                    origin.setLatitude(mOrigin.latitude);
+                    Location destiny = new Location("");
+                    destiny.setLatitude(mDestination.latitude);
+                    destiny.setLongitude(mDestination.longitude);
+                    float dis = destiny.distanceTo(origin);
+                    Log.i("Dis","----"+dis);
                     ii.putExtra("destino", mMarkerPoints.get(1).toString());
                     startActivity(ii);
 //                    drawRoute();

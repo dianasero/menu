@@ -3,12 +3,9 @@ package com.example.menu;
 import android.Manifest;
 import android.app.Activity;
 import android.content.Intent;
-
 import android.content.pm.PackageManager;
-import android.location.Geocoder;
 import android.location.Location;
 import android.os.Bundle;
-import android.os.Handler;
 import android.os.ResultReceiver;
 import android.util.Log;
 import android.view.View;
@@ -17,32 +14,13 @@ import android.widget.ImageButton;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 import androidx.core.app.ActivityCompat;
-import androidx.core.content.ContextCompat;
 
-import com.google.android.gms.common.ConnectionResult;
-import com.google.android.gms.common.api.ApiException;
-import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.location.FusedLocationProviderClient;
-import com.google.android.gms.location.GeofencingClient;
 import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.maps.model.LatLng;
-import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
-import com.google.android.libraries.places.api.Places;
-import com.google.android.libraries.places.api.model.Place;
-import com.google.android.libraries.places.api.model.PlaceLikelihood;
-import com.google.android.libraries.places.api.net.FindCurrentPlaceRequest;
-import com.google.android.libraries.places.api.net.FindCurrentPlaceResponse;
-import com.google.android.libraries.places.api.net.PlacesClient;
-
-import java.io.IOException;
-import java.util.Collections;
-import java.util.List;
-
-import static android.Manifest.permission.ACCESS_FINE_LOCATION;
 
 public class LockerActivity extends Activity  {
     String destino;
@@ -50,6 +28,7 @@ public class LockerActivity extends Activity  {
     Location currentLocation;
     LatLng locationDestiny;
     Button abrirLocker;
+    float results[];
     private ResultReceiver resultReceiver;
     private static final int MY_PERMISSIONS_REQUEST_ACCESS_FINE_LOCATION = 12;
 
@@ -78,6 +57,7 @@ public class LockerActivity extends Activity  {
             }
         });
 
+
     }
     private void fetchLocation() {
         if (ActivityCompat.checkSelfPermission(
@@ -92,13 +72,23 @@ public class LockerActivity extends Activity  {
             public void onSuccess(Location location) {
                 if (location != null) {
                     currentLocation = location;
-                    Toast.makeText(getApplicationContext(), currentLocation.getLatitude() + "" + currentLocation.getLongitude(), Toast.LENGTH_SHORT).show();
+//                    Toast.makeText(getApplicationContext(), currentLocation.getLatitude() + "" + currentLocation.getLongitude(), Toast.LENGTH_SHORT).show();
 //                    locationDestiny = new LatLng(currentLocation.getLatitude(),currentLocation.getLongitude());
 
+                    Location destino = new Location("");
+                    destino.setLatitude(locationDestiny.latitude);
+                    destino.setLongitude(locationDestiny.longitude);
+                    float distanceM = currentLocation.distanceTo(destino);
+                    Log.i("l",currentLocation.toString());
+                    Log.i("dis","ll  "+distanceM);
+                    if(distanceM <= 2.0)
+                        abrirLocker.setEnabled(true);
                     if(currentLocation.getLongitude()==locationDestiny.longitude&&currentLocation.getLatitude()==locationDestiny.latitude)
                     {
                         abrirLocker.setEnabled(true);
-                        Toast.makeText(getApplicationContext(), "Able", Toast.LENGTH_SHORT).show();
+
+                        Toast.makeText(getApplicationContext(), "Able:", Toast.LENGTH_SHORT).show();
+
                     }
 
                 }
