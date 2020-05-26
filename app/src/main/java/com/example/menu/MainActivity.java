@@ -15,6 +15,9 @@ import java.net.*;
 import android.view.View;
 import android.os.Bundle;
 //import android.support.v4.app;
+import com.google.firebase.iid.FirebaseInstanceId;
+import com.google.firebase.messaging.FirebaseMessaging;
+
 import java.util.*;
 import java.util.concurrent.ExecutionException;
 
@@ -30,6 +33,8 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        Log.d("Token ",""+ FirebaseInstanceId.getInstance().getToken());
+        FirebaseMessaging.getInstance().subscribeToTopic("allDevices");
         //Descarga de imagenes
         try {
             imagenes = new Bitmap[new petition(this).execute("http://192.168.1.64:8080/").get().length];
