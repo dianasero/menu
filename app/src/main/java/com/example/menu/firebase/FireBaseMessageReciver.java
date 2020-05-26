@@ -11,6 +11,7 @@ import android.net.Uri;
 import android.os.Build;
 import android.widget.RemoteViews;
 
+import androidx.annotation.DrawableRes;
 import androidx.core.app.NotificationCompat;
 
 
@@ -56,6 +57,7 @@ public class FireBaseMessageReciver extends FirebaseMessagingService {
                 .setContentIntent(pendingIntent);
 
         builder=builder.setContent(getCustomDesign(title,message));
+        builder.setSmallIcon(R.drawable.ic_laundry_foreground);
 
         NotificationManager notificationManager= (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
         if(Build.VERSION.SDK_INT>=Build.VERSION_CODES.O){
